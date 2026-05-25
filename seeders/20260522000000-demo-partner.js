@@ -1,0 +1,93 @@
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+  async up (queryInterface, Sequelize) {
+    await queryInterface.bulkInsert('partners', [
+      {
+        companyName: 'PT Solusi Bangun Sejahtera',
+        npwpNumber: '01.234.567.8-012.000',
+        sppkpNumber: 'PEM-00123/WPJ.07/KP.0303/2021',
+        fileNpwpSppkp: '/uploads/partners/npwp_sppkp_solusi_bangun.pdf',
+        pjName: 'Budi Santoso',
+        pjPosition: 'Direktur Utama',
+        companyPhone: '021-5551234',
+        pjPhone: '081234567890',
+        address1: 'Jl. Jendral Sudirman No. 45, Kavling 21',
+        address2: 'Gedung Sahid Sudirman Center Lantai 18',
+        city: 'Jakarta Pusat, DKI Jakarta',
+        postalCode: '10220',
+        fileDomicile: '/uploads/partners/domisili_solusi_bangun.pdf',
+        establishmentDeed: 'No. 12 Tanggal 15 Januari 2018',
+        latestAmendmentDeed: 'No. 05 Tanggal 10 Maret 2023',
+        nibNumber: '9120001234567 Tanggal 20 Juni 2018',
+        siupNumber: '503/123/SIUP-B/DPMPTSP/2018',
+        fileDeed: '/uploads/partners/akta_solusi_bangun.pdf',
+        investmentStatus: 'PMDN',
+        nibAmendmentDetails: 'Perubahan ke-2 Tanggal 12 April 2023',
+        nibDateNumber: '9120001234567 - 20 Jun 2018',
+        certificate1Name: 'ISO 9001:2015',
+        certificate1Number: 'QMS/0819283',
+        certificate1Validity: '31 Desember 2027',
+        certificate1Issuer: 'TUV SUD Indonesia',
+        certificate2Name: 'Sertifikat Badan Usaha (SBU)',
+        certificate2Number: '0192/SBU-SI/2021',
+        certificate2Validity: '15 Oktober 2026',
+        certificate2Issuer: 'LPJK',
+        fileCertificates: '/uploads/partners/sertifikat_gabungan_solusi_bangun.pdf',
+        fileOrgStructure: '/uploads/partners/struktur_org_solusi_bangun.pdf',
+        fileEquipmentList: '/uploads/partners/alat_apd_solusi_bangun.pdf',
+        fileExperienceList: '/uploads/partners/pengalaman_bast_solusi_bangun.pdf',
+        fileFinancialAudit: '/uploads/partners/laporan_audit_solusi_bangun.pdf',
+        fileBankStatement: '/uploads/partners/rekening_koran_solusi_bangun.pdf',
+        fileApplicationLetter: '/uploads/partners/surat_permohonan_solusi_bangun.pdf',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        companyName: 'CV Karya Indah Mandiri',
+        npwpNumber: '02.987.654.3-098.000',
+        sppkpNumber: 'N/A',
+        fileNpwpSppkp: '/uploads/partners/npwp_sppkp_karya_indah.pdf',
+        pjName: 'Hendra Wijaya',
+        pjPosition: 'Direktur',
+        companyPhone: '031-7776543',
+        pjPhone: '081987654321',
+        address1: 'Jl. Dharmahusada No. 102',
+        address2: 'Blok C-4',
+        city: 'Surabaya, Jawa Timur',
+        postalCode: '60285',
+        fileDomicile: '/uploads/partners/domisili_karya_indah.pdf',
+        establishmentDeed: 'No. 45 Tanggal 05 September 2020',
+        latestAmendmentDeed: '',
+        nibNumber: '0220009876543 Tanggal 18 September 2020',
+        siupNumber: '503/456/SIUP-K/DPMPTSP/2020',
+        fileDeed: '/uploads/partners/akta_karya_indah.pdf',
+        investmentStatus: 'PMDN',
+        nibAmendmentDetails: '',
+        nibDateNumber: '0220009876543 - 18 Sep 2020',
+        certificate1Name: 'Sertifikat Standar K3',
+        certificate1Number: 'K3/2022/990',
+        certificate1Validity: '12 September 2025',
+        certificate1Issuer: 'Kementerian Ketenagakerjaan',
+        certificate2Name: '',
+        certificate2Number: '',
+        certificate2Validity: '',
+        certificate2Issuer: '',
+        fileCertificates: '/uploads/partners/sertifikat_karya_indah.pdf',
+        fileOrgStructure: '/uploads/partners/struktur_org_karya_indah.pdf',
+        fileEquipmentList: '/uploads/partners/alat_apd_karya_indah.pdf',
+        fileExperienceList: '/uploads/partners/pengalaman_bast_karya_indah.pdf',
+        fileFinancialAudit: '/uploads/partners/laporan_audit_karya_indah.pdf',
+        fileBankStatement: '/uploads/partners/rekening_koran_karya_indah.pdf',
+        fileApplicationLetter: '/uploads/partners/surat_permohonan_karya_indah.pdf',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ], {});
+  },
+
+  async down (queryInterface, Sequelize) {
+    await queryInterface.bulkDelete('partners', null, {});
+  }
+};
