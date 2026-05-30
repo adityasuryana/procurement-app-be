@@ -1,3 +1,4 @@
+const { uploadToCloudinary } = require('../middleware/upload');
 const { partner } = require('../models');
 
 const getAllPartners = async (req, res) => {
@@ -28,7 +29,6 @@ const createPartner = async (req, res) => {
             companyName,
             npwpNumber,
             sppkpNumber,
-            fileNpwpSppkp,
             pjName,
             pjPosition,
             companyPhone,
@@ -37,12 +37,8 @@ const createPartner = async (req, res) => {
             address2,
             city,
             postalCode,
-            fileDomicile,
-            establishmentDeed,
-            latestAmendmentDeed,
             nibNumber,
             siupNumber,
-            fileDeed,
             investmentStatus,
             nibAmendmentDetails,
             nibDateNumber,
@@ -54,21 +50,52 @@ const createPartner = async (req, res) => {
             certificate2Number,
             certificate2Validity,
             certificate2Issuer,
-            fileCertificates,
-            fileOrgStructure,
-            fileEquipmentList,
-            fileExperienceList,
-            fileFinancialAudit,
-            fileBankStatement,
-            fileApplicationLetter,
             status
         } = req.body;
+
+        // Dynamic helper to upload to Cloudinary if file is present in multipart form, otherwise fallback to req.body
+        const getFileUrl = async (fieldName) => {
+            if (req.files && req.files[fieldName] && req.files[fieldName][0]) {
+                const file = req.files[fieldName][0];
+                const uploadResult = await uploadToCloudinary(file.buffer, file.originalname);
+                return uploadResult.secure_url;
+            }
+            return req.body[fieldName] || null;
+        };
+
+        const [
+            fileNpwpSppkpUrl,
+            fileDomicileUrl,
+            establishmentDeedUrl,
+            latestAmendmentDeedUrl,
+            fileDeedUrl,
+            fileCertificatesUrl,
+            fileOrgStructureUrl,
+            fileEquipmentListUrl,
+            fileExperienceListUrl,
+            fileFinancialAuditUrl,
+            fileBankStatementUrl,
+            fileApplicationLetterUrl
+        ] = await Promise.all([
+            getFileUrl('fileNpwpSppkp'),
+            getFileUrl('fileDomicile'),
+            getFileUrl('establishmentDeed'),
+            getFileUrl('latestAmendmentDeed'),
+            getFileUrl('fileDeed'),
+            getFileUrl('fileCertificates'),
+            getFileUrl('fileOrgStructure'),
+            getFileUrl('fileEquipmentList'),
+            getFileUrl('fileExperienceList'),
+            getFileUrl('fileFinancialAudit'),
+            getFileUrl('fileBankStatement'),
+            getFileUrl('fileApplicationLetter')
+        ]);
 
         const newPartner = await partner.create({
             companyName,
             npwpNumber,
             sppkpNumber,
-            fileNpwpSppkp,
+            fileNpwpSppkp: fileNpwpSppkpUrl,
             pjName,
             pjPosition,
             companyPhone,
@@ -77,12 +104,12 @@ const createPartner = async (req, res) => {
             address2,
             city,
             postalCode,
-            fileDomicile,
-            establishmentDeed,
-            latestAmendmentDeed,
+            fileDomicile: fileDomicileUrl,
+            establishmentDeed: establishmentDeedUrl,
+            latestAmendmentDeed: latestAmendmentDeedUrl,
             nibNumber,
             siupNumber,
-            fileDeed,
+            fileDeed: fileDeedUrl,
             investmentStatus,
             nibAmendmentDetails,
             nibDateNumber,
@@ -94,13 +121,13 @@ const createPartner = async (req, res) => {
             certificate2Number,
             certificate2Validity,
             certificate2Issuer,
-            fileCertificates,
-            fileOrgStructure,
-            fileEquipmentList,
-            fileExperienceList,
-            fileFinancialAudit,
-            fileBankStatement,
-            fileApplicationLetter,
+            fileCertificates: fileCertificatesUrl,
+            fileOrgStructure: fileOrgStructureUrl,
+            fileEquipmentList: fileEquipmentListUrl,
+            fileExperienceList: fileExperienceListUrl,
+            fileFinancialAudit: fileFinancialAuditUrl,
+            fileBankStatement: fileBankStatementUrl,
+            fileApplicationLetter: fileApplicationLetterUrl,
             status: status || 'Pending'
         });
 
@@ -117,7 +144,6 @@ const updatePartner = async (req, res) => {
             companyName,
             npwpNumber,
             sppkpNumber,
-            fileNpwpSppkp,
             pjName,
             pjPosition,
             companyPhone,
@@ -126,12 +152,8 @@ const updatePartner = async (req, res) => {
             address2,
             city,
             postalCode,
-            fileDomicile,
-            establishmentDeed,
-            latestAmendmentDeed,
             nibNumber,
             siupNumber,
-            fileDeed,
             investmentStatus,
             nibAmendmentDetails,
             nibDateNumber,
@@ -143,13 +165,6 @@ const updatePartner = async (req, res) => {
             certificate2Number,
             certificate2Validity,
             certificate2Issuer,
-            fileCertificates,
-            fileOrgStructure,
-            fileEquipmentList,
-            fileExperienceList,
-            fileFinancialAudit,
-            fileBankStatement,
-            fileApplicationLetter,
             status
         } = req.body;
 
@@ -158,42 +173,83 @@ const updatePartner = async (req, res) => {
             return res.status(404).json({ message: 'Partner not found' });
         }
 
-        foundPartner.companyName = companyName;
-        foundPartner.npwpNumber = npwpNumber;
-        foundPartner.sppkpNumber = sppkpNumber;
-        foundPartner.fileNpwpSppkp = fileNpwpSppkp;
-        foundPartner.pjName = pjName;
-        foundPartner.pjPosition = pjPosition;
-        foundPartner.companyPhone = companyPhone;
-        foundPartner.pjPhone = pjPhone;
-        foundPartner.address1 = address1;
-        foundPartner.address2 = address2;
-        foundPartner.city = city;
-        foundPartner.postalCode = postalCode;
-        foundPartner.fileDomicile = fileDomicile;
-        foundPartner.establishmentDeed = establishmentDeed;
-        foundPartner.latestAmendmentDeed = latestAmendmentDeed;
-        foundPartner.nibNumber = nibNumber;
-        foundPartner.siupNumber = siupNumber;
-        foundPartner.fileDeed = fileDeed;
-        foundPartner.investmentStatus = investmentStatus;
-        foundPartner.nibAmendmentDetails = nibAmendmentDetails;
-        foundPartner.nibDateNumber = nibDateNumber;
-        foundPartner.certificate1Name = certificate1Name;
-        foundPartner.certificate1Number = certificate1Number;
-        foundPartner.certificate1Validity = certificate1Validity;
-        foundPartner.certificate1Issuer = certificate1Issuer;
-        foundPartner.certificate2Name = certificate2Name;
-        foundPartner.certificate2Number = certificate2Number;
-        foundPartner.certificate2Validity = certificate2Validity;
-        foundPartner.certificate2Issuer = certificate2Issuer;
-        foundPartner.fileCertificates = fileCertificates;
-        foundPartner.fileOrgStructure = fileOrgStructure;
-        foundPartner.fileEquipmentList = fileEquipmentList;
-        foundPartner.fileExperienceList = fileExperienceList;
-        foundPartner.fileFinancialAudit = fileFinancialAudit;
-        foundPartner.fileBankStatement = fileBankStatement;
-        foundPartner.fileApplicationLetter = fileApplicationLetter;
+        // Helper to handle updating file fields: uploads if new file provided, falls back to body value, or keeps existing DB value
+        const getFileUrl = async (fieldName) => {
+            if (req.files && req.files[fieldName] && req.files[fieldName][0]) {
+                const file = req.files[fieldName][0];
+                const uploadResult = await uploadToCloudinary(file.buffer, file.originalname);
+                return uploadResult.secure_url;
+            }
+            if (req.body[fieldName] !== undefined) {
+                return req.body[fieldName];
+            }
+            return foundPartner[fieldName];
+        };
+
+        const [
+            fileNpwpSppkpUrl,
+            fileDomicileUrl,
+            establishmentDeedUrl,
+            latestAmendmentDeedUrl,
+            fileDeedUrl,
+            fileCertificatesUrl,
+            fileOrgStructureUrl,
+            fileEquipmentListUrl,
+            fileExperienceListUrl,
+            fileFinancialAuditUrl,
+            fileBankStatementUrl,
+            fileApplicationLetterUrl
+        ] = await Promise.all([
+            getFileUrl('fileNpwpSppkp'),
+            getFileUrl('fileDomicile'),
+            getFileUrl('establishmentDeed'),
+            getFileUrl('latestAmendmentDeed'),
+            getFileUrl('fileDeed'),
+            getFileUrl('fileCertificates'),
+            getFileUrl('fileOrgStructure'),
+            getFileUrl('fileEquipmentList'),
+            getFileUrl('fileExperienceList'),
+            getFileUrl('fileFinancialAudit'),
+            getFileUrl('fileBankStatement'),
+            getFileUrl('fileApplicationLetter')
+        ]);
+
+        foundPartner.companyName = companyName !== undefined ? companyName : foundPartner.companyName;
+        foundPartner.npwpNumber = npwpNumber !== undefined ? npwpNumber : foundPartner.npwpNumber;
+        foundPartner.sppkpNumber = sppkpNumber !== undefined ? sppkpNumber : foundPartner.sppkpNumber;
+        foundPartner.fileNpwpSppkp = fileNpwpSppkpUrl;
+        foundPartner.pjName = pjName !== undefined ? pjName : foundPartner.pjName;
+        foundPartner.pjPosition = pjPosition !== undefined ? pjPosition : foundPartner.pjPosition;
+        foundPartner.companyPhone = companyPhone !== undefined ? companyPhone : foundPartner.companyPhone;
+        foundPartner.pjPhone = pjPhone !== undefined ? pjPhone : foundPartner.pjPhone;
+        foundPartner.address1 = address1 !== undefined ? address1 : foundPartner.address1;
+        foundPartner.address2 = address2 !== undefined ? address2 : foundPartner.address2;
+        foundPartner.city = city !== undefined ? city : foundPartner.city;
+        foundPartner.postalCode = postalCode !== undefined ? postalCode : foundPartner.postalCode;
+        foundPartner.fileDomicile = fileDomicileUrl;
+        foundPartner.establishmentDeed = establishmentDeedUrl;
+        foundPartner.latestAmendmentDeed = latestAmendmentDeedUrl;
+        foundPartner.nibNumber = nibNumber !== undefined ? nibNumber : foundPartner.nibNumber;
+        foundPartner.siupNumber = siupNumber !== undefined ? siupNumber : foundPartner.siupNumber;
+        foundPartner.fileDeed = fileDeedUrl;
+        foundPartner.investmentStatus = investmentStatus !== undefined ? investmentStatus : foundPartner.investmentStatus;
+        foundPartner.nibAmendmentDetails = nibAmendmentDetails !== undefined ? nibAmendmentDetails : foundPartner.nibAmendmentDetails;
+        foundPartner.nibDateNumber = nibDateNumber !== undefined ? nibDateNumber : foundPartner.nibDateNumber;
+        foundPartner.certificate1Name = certificate1Name !== undefined ? certificate1Name : foundPartner.certificate1Name;
+        foundPartner.certificate1Number = certificate1Number !== undefined ? certificate1Number : foundPartner.certificate1Number;
+        foundPartner.certificate1Validity = certificate1Validity !== undefined ? certificate1Validity : foundPartner.certificate1Validity;
+        foundPartner.certificate1Issuer = certificate1Issuer !== undefined ? certificate1Issuer : foundPartner.certificate1Issuer;
+        foundPartner.certificate2Name = certificate2Name !== undefined ? certificate2Name : foundPartner.certificate2Name;
+        foundPartner.certificate2Number = certificate2Number !== undefined ? certificate2Number : foundPartner.certificate2Number;
+        foundPartner.certificate2Validity = certificate2Validity !== undefined ? certificate2Validity : foundPartner.certificate2Validity;
+        foundPartner.certificate2Issuer = certificate2Issuer !== undefined ? certificate2Issuer : foundPartner.certificate2Issuer;
+        foundPartner.fileCertificates = fileCertificatesUrl;
+        foundPartner.fileOrgStructure = fileOrgStructureUrl;
+        foundPartner.fileEquipmentList = fileEquipmentListUrl;
+        foundPartner.fileExperienceList = fileExperienceListUrl;
+        foundPartner.fileFinancialAudit = fileFinancialAuditUrl;
+        foundPartner.fileBankStatement = fileBankStatementUrl;
+        foundPartner.fileApplicationLetter = fileApplicationLetterUrl;
         if (status) {
             foundPartner.status = status;
         }
