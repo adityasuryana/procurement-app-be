@@ -1,4 +1,5 @@
 const { User } = require('../models');
+const bcrypt = require('bcrypt');
 
 const getAllUsers = async (req, res) => {
     try {
@@ -30,13 +31,14 @@ const updateUser = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        user.username = username;
-        user.password = password;
-        user.firstName = firstName;
-        user.lastName = lastName;
-        user.email = email;
-        user.role = role;
-        await user.save();
+
+        // Build explicit update payload — only include password when a new one is provided
+        const updateData = { username, firstName, lastName, email, role };
+        if (password) {
+            updateData.password = await bcrypt.hash(password, 10);
+        }
+
+        await user.update(updateData);
         res.status(200).json(user);
     } catch (error) {
         res.status(500).json({ error: error.message });

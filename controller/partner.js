@@ -165,7 +165,11 @@ const updatePartner = async (req, res) => {
             certificate2Number,
             certificate2Validity,
             certificate2Issuer,
-            status
+            status,
+            alasanDitolak,
+            alasanDisetujui,
+            fileDitolak,
+            evaluation
         } = req.body;
 
         const foundPartner = await partner.findByPk(id);
@@ -250,7 +254,17 @@ const updatePartner = async (req, res) => {
         foundPartner.fileFinancialAudit = fileFinancialAuditUrl;
         foundPartner.fileBankStatement = fileBankStatementUrl;
         foundPartner.fileApplicationLetter = fileApplicationLetterUrl;
+        foundPartner.alasanDitolak = alasanDitolak !== undefined ? alasanDitolak : foundPartner.alasanDitolak;
+        foundPartner.alasanDisetujui = alasanDisetujui !== undefined ? alasanDisetujui : foundPartner.alasanDisetujui;
+        foundPartner.fileDitolak = fileDitolak !== undefined ? fileDitolak : foundPartner.fileDitolak;
+        foundPartner.evaluation = evaluation !== undefined ? evaluation : foundPartner.evaluation;
+
         if (status) {
+            if (status === 'Disetujui' && foundPartner.status !== 'Disetujui') {
+                foundPartner.approvedAt = new Date();
+            } else if (status !== 'Disetujui') {
+                foundPartner.approvedAt = null;
+            }
             foundPartner.status = status;
         }
 

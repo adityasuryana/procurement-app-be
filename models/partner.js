@@ -53,6 +53,26 @@ module.exports = (sequelize, DataTypes) => {
     status: {
       type: DataTypes.STRING,
       defaultValue: 'Pending'
+    },
+    approvedAt: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    alasanDitolak: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    alasanDisetujui: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    fileDitolak: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    evaluation: {
+      type: DataTypes.TEXT,
+      allowNull: true
     }
   }, {
     sequelize,
