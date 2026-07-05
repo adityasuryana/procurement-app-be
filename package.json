@@ -12,6 +12,7 @@
     "migrate": "npx sequelize-cli db:migrate",
     "undo:migrate": "npx sequelize-cli db:migrate:undo:all",
     "seed": "npx sequelize-cli db:seed:all",
+    "seed:user": "npx sequelize-cli db:seed --seed 20260630000000-demo-user.js",
     "undo:seed": "npx sequelize-cli db:seed:undo:all",
     "build": "babel src -d public"
   },
