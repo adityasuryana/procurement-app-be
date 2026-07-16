@@ -4,7 +4,7 @@ const os = require('os');
 const user = require('./user');
 const auth = require('./auth');
 const qrcontact = require('./qrcontact');
-const qrinventory = require('./qrinventory');
+const qrasset = require('./qrasset');
 const partner = require('./partner');
 const upload = require('./upload');
 const career = require('./career');
@@ -27,7 +27,7 @@ router.get('/server-ip', (req, res) => {
 router.use('/users', user);
 router.use('/auth', auth);
 router.use('/qrcontact', qrcontact);
-router.use('/qrinventory', qrinventory);
+router.use('/qrasset', qrasset);
 router.use('/partner', partner);
 router.use('/upload', upload);
 router.use('/career', career);

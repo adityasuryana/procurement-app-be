@@ -1,84 +1,84 @@
-const { Qrinventory } = require('../models');
+const { Qrasset } = require('../models');
 const PDFDocument = require('pdfkit');
 
-const getAllQrInventories = async (req, res) => {
+const getAllQrAssets = async (req, res) => {
     try {
-        const inventories = await Qrinventory.findAll();
-        res.status(200).json(inventories);
+        const assets = await Qrasset.findAll();
+        res.status(200).json(assets);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 }
 
-const getQrInventoryById = async (req, res) => {
+const getQrAssetById = async (req, res) => {
     try {
         const { id } = req.params;
-        const inventory = await Qrinventory.findByPk(id);
-        if (!inventory) {
-            return res.status(404).json({ message: 'QR Inventory item not found' });
+        const asset = await Qrasset.findByPk(id);
+        if (!asset) {
+            return res.status(404).json({ message: 'QR Asset item not found' });
         }
-        res.status(200).json(inventory);
+        res.status(200).json(asset);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 }
 
-const createQrInventory = async (req, res) => {
+const createQrAsset = async (req, res) => {
     try {
         const { name, code, category, location, status, quantity, description } = req.body;
         // Check if code already exists
-        const existing = await Qrinventory.findOne({ where: { code } });
+        const existing = await Qrasset.findOne({ where: { code } });
         if (existing) {
-            return res.status(400).json({ error: `Kode Inventory "${code}" sudah terdaftar.` });
+            return res.status(400).json({ error: `Kode Aset "${code}" sudah terdaftar.` });
         }
-        const inventory = await Qrinventory.create({ name, code, category, location, status, quantity, description });
-        res.status(201).json(inventory);
+        const asset = await Qrasset.create({ name, code, category, location, status, quantity, description });
+        res.status(201).json(asset);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 }
 
-const updateQrInventory = async (req, res) => {
+const updateQrAsset = async (req, res) => {
     try {
         const { id } = req.params;
         const { name, code, category, location, status, quantity, description } = req.body;
-        const inventory = await Qrinventory.findByPk(id);
-        if (!inventory) {
-            return res.status(404).json({ message: 'QR Inventory item not found' });
+        const asset = await Qrasset.findByPk(id);
+        if (!asset) {
+            return res.status(404).json({ message: 'QR Asset item not found' });
         }
 
         // Check unique code if changed
-        if (code !== inventory.code) {
-            const existing = await Qrinventory.findOne({ where: { code } });
+        if (code !== asset.code) {
+            const existing = await Qrasset.findOne({ where: { code } });
             if (existing) {
-                return res.status(400).json({ error: `Kode Inventory "${code}" sudah terdaftar.` });
+                return res.status(400).json({ error: `Kode Aset "${code}" sudah terdaftar.` });
             }
         }
 
-        inventory.name = name;
-        inventory.code = code;
-        inventory.category = category;
-        inventory.location = location;
-        inventory.status = status;
-        inventory.quantity = quantity;
-        inventory.description = description;
+        asset.name = name;
+        asset.code = code;
+        asset.category = category;
+        asset.location = location;
+        asset.status = status;
+        asset.quantity = quantity;
+        asset.description = description;
 
-        await inventory.save();
-        res.status(200).json(inventory);
+        await asset.save();
+        res.status(200).json(asset);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 }
 
-const deleteQrInventory = async (req, res) => {
+const deleteQrAsset = async (req, res) => {
     try {
         const { id } = req.params;
-        const inventory = await Qrinventory.findByPk(id);
-        if (!inventory) {
-            return res.status(404).json({ message: 'QR Inventory item not found' });
+        const asset = await Qrasset.findByPk(id);
+        if (!asset) {
+            return res.status(404).json({ message: 'QR Asset item not found' });
         }
-        await inventory.destroy();
-        res.status(200).json({ message: 'QR Inventory item deleted successfully' });
+        await asset.destroy();
+        res.status(200).json({ message: 'QR Asset item deleted successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -87,28 +87,28 @@ const deleteQrInventory = async (req, res) => {
 const downloadPdf = async (req, res) => {
     try {
         const { id } = req.params;
-        const inventory = await Qrinventory.findByPk(id);
-        if (!inventory) {
-            return res.status(404).json({ message: 'QR Inventory item not found' });
+        const asset = await Qrasset.findByPk(id);
+        if (!asset) {
+            return res.status(404).json({ message: 'QR Asset item not found' });
         }
 
         const doc = new PDFDocument({ margin: 50 });
 
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `inline; filename="Inventory_${inventory.code}.pdf"`);
+        res.setHeader('Content-Disposition', `inline; filename="Asset_${asset.code}.pdf"`);
 
         doc.pipe(res);
 
         // Header Title
         doc.font('Helvetica-Bold')
-           .fillColor('#4F46E5')
+           .fillColor('#3c58b9') // Matching blue color of DEA logo
            .fontSize(20)
            .text('PT DUTA ESA ADIPERKASA', { align: 'center' });
 
         doc.font('Helvetica')
            .fillColor('#475569')
            .fontSize(9)
-           .text('Sistem Informasi Manajemen Aset & Inventory', { align: 'center' });
+           .text('Sistem Informasi Manajemen Aset', { align: 'center' });
 
         doc.moveDown(1);
 
@@ -125,19 +125,18 @@ const downloadPdf = async (req, res) => {
         doc.font('Helvetica-Bold')
            .fillColor('#1E293B')
            .fontSize(14)
-           .text('SPESIFIKASI DETAIL ASET INVENTORY', { align: 'left' });
+           .text('SPESIFIKASI DETAIL ASET', { align: 'left' });
 
         doc.moveDown(1.5);
 
         // Details key-value rows
         const rows = [
-            { rowLabel: 'Nama Barang', rowValue: inventory.name },
-            { rowLabel: 'Kode Inventory', rowValue: inventory.code },
-            { rowLabel: 'Kategori', rowValue: inventory.category },
-            { rowLabel: 'Jumlah Unit', rowValue: `${inventory.quantity} Unit` },
-            { rowLabel: 'Status Aset', rowValue: inventory.status },
-            { rowLabel: 'Lokasi Penempatan', rowValue: inventory.location },
-            { rowLabel: 'Tanggal Terdaftar', rowValue: new Date(inventory.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }
+            { rowLabel: 'Nama Barang', rowValue: asset.name },
+            { rowLabel: 'Kode Aset', rowValue: asset.code },
+            { rowLabel: 'Kategori', rowValue: asset.category },
+            { rowLabel: 'Status Aset', rowValue: asset.status },
+            { rowLabel: 'Lokasi Penempatan', rowValue: asset.location },
+            { rowLabel: 'Tanggal Terdaftar', rowValue: new Date(asset.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }
         ];
 
         let startY = doc.y;
@@ -181,7 +180,7 @@ const downloadPdf = async (req, res) => {
         doc.font('Helvetica')
            .fillColor('#334155')
            .fontSize(9.5)
-           .text(inventory.description || 'Tidak ada spesifikasi tambahan.', 60, doc.y + 8, { width: 492, align: 'justify' });
+           .text(asset.description || 'Tidak ada spesifikasi tambahan.', 60, doc.y + 8, { width: 492, align: 'justify' });
 
         doc.y = doc.y + 85;
         doc.moveDown(2);
@@ -199,11 +198,25 @@ const downloadPdf = async (req, res) => {
     }
 }
 
+const getQrAssetByToken = async (req, res) => {
+    try {
+        const { token } = req.params;
+        const asset = await Qrasset.findOne({ where: { token } });
+        if (!asset) {
+            return res.status(404).json({ message: 'QR Asset item not found' });
+        }
+        res.status(200).json(asset);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
 module.exports = {
-    getAllQrInventories,
-    getQrInventoryById,
-    createQrInventory,
-    updateQrInventory,
-    deleteQrInventory,
+    getAllQrAssets,
+    getQrAssetById,
+    getQrAssetByToken,
+    createQrAsset,
+    updateQrAsset,
+    deleteQrAsset,
     downloadPdf
 };

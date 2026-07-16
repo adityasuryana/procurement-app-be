@@ -3,17 +3,12 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Qrinventory extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
+  class Qrasset extends Model {
     static associate(models) {
       // define association here
     }
   }
-  Qrinventory.init({
+  Qrasset.init({
     name: {
       type: DataTypes.STRING,
       allowNull: false
@@ -43,10 +38,28 @@ module.exports = (sequelize, DataTypes) => {
     description: {
       type: DataTypes.TEXT,
       allowNull: true
+    },
+    token: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true
     }
   }, {
     sequelize,
-    modelName: 'Qrinventory',
+    modelName: 'Qrasset',
+    hooks: {
+      beforeValidate: (asset) => {
+        const crypto = require('crypto');
+        if (!asset.token) {
+          const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+          let token = '';
+          for (let i = 0; i < 8; i++) {
+            token += chars[crypto.randomInt(0, chars.length)];
+          }
+          asset.token = token;
+        }
+      }
+    }
   });
-  return Qrinventory;
+  return Qrasset;
 };
