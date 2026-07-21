@@ -25,13 +25,13 @@ const getQrAssetById = async (req, res) => {
 
 const createQrAsset = async (req, res) => {
     try {
-        const { name, code, category, location, status, quantity, description } = req.body;
+        const { name, code, category, location, status, description } = req.body;
         // Check if code already exists
         const existing = await Qrasset.findOne({ where: { code } });
         if (existing) {
             return res.status(400).json({ error: `Kode Aset "${code}" sudah terdaftar.` });
         }
-        const asset = await Qrasset.create({ name, code, category, location, status, quantity, description });
+        const asset = await Qrasset.create({ name, code, category, location, status, description });
         res.status(201).json(asset);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -41,7 +41,7 @@ const createQrAsset = async (req, res) => {
 const updateQrAsset = async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, code, category, location, status, quantity, description } = req.body;
+        const { name, code, category, location, status, description } = req.body;
         const asset = await Qrasset.findByPk(id);
         if (!asset) {
             return res.status(404).json({ message: 'QR Asset item not found' });
@@ -60,7 +60,6 @@ const updateQrAsset = async (req, res) => {
         asset.category = category;
         asset.location = location;
         asset.status = status;
-        asset.quantity = quantity;
         asset.description = description;
 
         await asset.save();
