@@ -16,13 +16,13 @@ module.exports = {
         firstName: 'Aditya',
         lastName: 'Suryana',
         email: 'aditya.suryana@dea-corp.co.id',
-        role: 'Admin',
+        role: 'Administrator',
         createdAt: new Date(),
         updatedAt: new Date()
       }], {});
     } else {
       await queryInterface.sequelize.query(
-        `UPDATE "Users" SET password = '${bcrypt.hashSync('admin123', 10)}' WHERE username = 'admin';`
+        `UPDATE "Users" SET password = '${bcrypt.hashSync('admin123', 10)}', role = 'Administrator' WHERE username = 'admin';`
       );
     }
   },
